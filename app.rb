@@ -1,6 +1,4 @@
-require 'sinatra'
+require "sinatra"
 
-get '/' do
-	content_type :json
-	{ message: 'Olá, mundo!' }.to_json
-end
+require_relative "resources/home_resource"
+require_relative "resources/clientes_resource"
