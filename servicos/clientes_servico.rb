@@ -7,8 +7,14 @@ class ClientesServico
     conectar_mysql
   end
 
-  def todos
-    resultado = @mysql.query("SELECT * FROM clientes")
+  def todos(pagina=1, limit=10)
+    page = pagina.to_i
+    page = 1 if page < 1
+
+    limit = 10 if limit.to_i < 1
+    offset = (page - 1) * limit
+
+    resultado = @mysql.query("SELECT * FROM clientes limit #{limit} offset #{offset}")
     clientes = []
     resultado.each do |row|
       cliente = Cliente.new
@@ -19,6 +25,25 @@ class ClientesServico
       clientes << cliente
     end
     clientes
+  end
+
+  def busca_por_id(id)
+    resultado = @mysql.query("SELECT * FROM clientes where id = #{id.to_i}")
+    
+    row = resultado.first
+    return row if row.nil?
+    
+    @cliente = Cliente.new
+    @cliente.id = row['id']
+    @cliente.nome = row['nome']
+    @cliente.telefone = row['telefone']
+    @cliente.observacao = row['observacao']
+
+    @cliente
+  end
+
+  def delete_por_id(id)
+    @mysql.query("delete FROM clientes where id = #{id}")
   end
 
   def salvar(cliente)
